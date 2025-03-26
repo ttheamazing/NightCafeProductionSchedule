@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Cafe Production Schedule</title>
+    <link rel="stylesheet" href="css/styles.css?v=1">
+</head>
+<body>
+    <header>
+        <h1>Night Cafe Production Schedule</h1>
+        <div class="controls">
+            <div class="view-toggle">
+                <button id="daily-view-btn" class="active">Daily View</button>
+                <button id="weekly-view-btn">Weekly View</button>
+            </div>
+            <div class="zoom-controls">
+                <button id="zoom-out-btn">-</button>
+                <span id="zoom-level">100%</span>
+                <button id="zoom-in-btn">+</button>
+            </div>
+            <button id="print-btn" class="print-btn">Print Schedule</button>
+        </div>
+    </header>
+
+    <!-- Print Stylesheet -->
+    <style type="text/css" media="print">
+        @page {
+            size: landscape;
+        }
+        
+        header, .sidebar, .zoom-controls, .view-toggle, #print-btn {
+            display: none !important;
+        }
+        
+        .container {
+            display: block !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+        
+        .main-content {
+            overflow: visible !important;
+        }
+        
+        .employee-row, .timeline-header {
+            page-break-inside: avoid;
+        }
+        
+        body {
+            background-color: white !important;
+        }
+    </style>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>Product Area</h2>
+            <div id="product-list" class="product-list">
+                <!-- Products will be loaded here dynamically -->
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="daily-view" class="view active">
+                <div class="timeline-header">
+                    <!-- Hours will be generated here -->
+                </div>
+                <div class="employees">
+                    <!-- Employee rows will be generated here -->
+                </div>
+            </div>
+
+            <div id="weekly-view" class="view">
+                <div class="days-container">
+                    <!-- Days will be generated here -->
+                </div>
+                <div class="employees-weekly">
+                    <!-- Employee weekly rows will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Context Menu -->
+    <div id="task-context-menu" class="context-menu">
+        <ul>
+            <li id="delete-task-option">Delete Task</li>
+        </ul>
+    </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <div id="delete-confirm-dialog" class="modal">
+        <div class="modal-content delete-confirm-content">
+            <h3>Delete Task</h3>
+            <p>Are you sure you want to delete this task?</p>
+            <div class="modal-actions">
+                <button id="confirm-delete-btn">Delete</button>
+                <button id="cancel-delete-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Modal -->
+    <div id="employee-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-employee-modal">&times;</span>
+            <h2 id="employee-modal-title">Add New Employee</h2>
+            
+            <div class="form-group">
+                <label for="employee-name">Employee Name:</label>
+                <input type="text" id="employee-name" placeholder="Enter employee name">
+            </div>
+            
+            <div class="form-group">
+                <label>Employee Type:</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="employee-type" value="global" checked> 
+                        Global (available every day)
+                    </label>
+                    <label>
+                        <input type="radio" name="employee-type" value="day-specific"> 
+                        Just for <span id="current-day-label">today</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="save-employee-btn">Save Employee</button>
+                <button id="cancel-employee-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Employee Modal -->
+    <div id="delete-employee-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-delete-employee-modal">&times;</span>
+            <h2>Delete Employee</h2>
+            
+            <p>How would you like to delete <span id="employee-to-delete-name"></span>?</p>
+            
+            <div class="form-group">
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="delete-type" value="day-specific" checked> 
+                        Just remove from <span id="delete-current-day-label">today</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="delete-type" value="global"> 
+                        Remove completely (from all days)
+                    </label>
+                </div>
+            </div>
+            
+            <div class="warning-message" id="delete-warning">
+                Warning: This will also delete all tasks assigned to this employee.
+            </div>
+            
+            <div class="modal-actions">
+                <button id="confirm-delete-employee-btn">Delete</button>
+                <button id="cancel-delete-employee-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Template Modal -->
+    <div id="template-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-template-modal">&times;</span>
+            <h2>Day Templates</h2>
+            
+            <div class="template-tabs">
+                <button id="save-template-tab" class="template-tab active">Save Template</button>
+                <button id="load-template-tab" class="template-tab">Load Template</button>
+            </div>
+            
+            <div id="save-template-panel" class="template-panel">
+                <div class="form-group">
+                    <label for="template-name">Template Name:</label>
+                    <input type="text" id="template-name" placeholder="e.g., Regular Monday">
+                </div>
+                
+                <div class="form-group">
+                    <label>Day to Save:</label>
+                    <select id="day-to-save">
+                        <!-- Days will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="save-template-btn">Save Template</button>
+                </div>
+            </div>
+            
+            <div id="load-template-panel" class="template-panel" style="display: none;">
+                <div class="form-group">
+                    <label>Available Templates:</label>
+                    <select id="template-to-load">
+                        <!-- Templates will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Apply To:</label>
+                    <select id="day-to-apply">
+                        <!-- Days will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="load-template-btn">Apply Template</button>
+                    <button id="delete-template-btn" style="background-color: #ff4d4f; color: white; border: none;">Delete Template</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product/Task Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Add New Product</h2>
+            
+            <div class="form-group">
+                <label for="product-name">Product Name:</label>
+                <input type="text" id="product-name" placeholder="Enter product name">
+            </div>
+            
+            <h3>Tasks</h3>
+            <div id="task-list">
+                <!-- Task inputs will be added here -->
+                <div class="task-input-row">
+                    <input type="text" class="task-name-input" placeholder="Task name">
+                    <input type="number" class="task-duration-input" placeholder="Minutes" min="1">
+                    <button class="remove-task-btn">×</button>
+                </div>
+            </div>
+            
+            <button id="add-task-btn">+ Add Another Task</button>
+            
+            <div class="modal-actions">
+                <button id="save-product-btn">Save Product</button>
+                <button id="cancel-product-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data/sample_data.js?v=2"></script>
+    <script src="js/gantt.js?v=2"></script>
+    <script src="js/app.js?v=2"></script>
+</body>
+</html>
