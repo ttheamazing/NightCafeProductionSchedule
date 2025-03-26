@@ -19,6 +19,7 @@
                 <span id="zoom-level">100%</span>
                 <button id="zoom-in-btn">+</button>
             </div>
+            <button id="settings-btn" class="settings-btn">Settings</button>
             <button id="print-btn" class="print-btn">Print Schedule</button>
         </div>
     </header>
@@ -246,8 +247,62 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-settings-modal">&times;</span>
+            <h2>Display Settings</h2>
+            
+            <div class="settings-section">
+                <h3>Color Theme</h3>
+                
+                <div class="form-group">
+                    <label for="header-bg-color">Header Background:</label>
+                    <input type="color" id="header-bg-color" class="color-picker">
+                    <button class="reset-color" data-target="header-bg-color" data-default="#333333">Reset</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="header-text-color">Header Text:</label>
+                    <input type="color" id="header-text-color" class="color-picker">
+                    <button class="reset-color" data-target="header-text-color" data-default="#ffffff">Reset</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="body-bg-color">Background:</label>
+                    <input type="color" id="body-bg-color" class="color-picker">
+                    <button class="reset-color" data-target="body-bg-color" data-default="#f4f4f4">Reset</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sidebar-bg-color">Sidebar Background:</label>
+                    <input type="color" id="sidebar-bg-color" class="color-picker">
+                    <button class="reset-color" data-target="sidebar-bg-color" data-default="#eeeeee">Reset</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-bg-color">Task Background:</label>
+                    <input type="color" id="task-bg-color" class="color-picker">
+                    <button class="reset-color" data-target="task-bg-color" data-default="#1890ff">Reset</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-text-color">Task Text:</label>
+                    <input type="color" id="task-text-color" class="color-picker">
+                    <button class="reset-color" data-target="task-text-color" data-default="#ffffff">Reset</button>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="save-settings-btn">Save Settings</button>
+                <button id="reset-all-settings-btn">Reset All</button>
+            </div>
+        </div>
+    </div>
+
     <script src="data/sample_data.js?v=2"></script>
     <script src="js/gantt.js?v=2"></script>
+    <script src="js/settings.js?v=1"></script>
     <script src="js/app.js?v=2"></script>
 </body>
 </html>

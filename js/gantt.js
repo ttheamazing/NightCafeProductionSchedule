@@ -701,6 +701,15 @@ class GanttChart {
                 
                 taskElement.innerHTML = taskContent;
                 
+                // Apply current settings to the new task
+                const settings = JSON.parse(localStorage.getItem('ganttChartSettings')) || {};
+                if (settings['task-bg-color']) {
+                    taskElement.style.backgroundColor = settings['task-bg-color'];
+                }
+                if (settings['task-text-color']) {
+                    taskElement.style.color = settings['task-text-color'];
+                }
+                
                 employeeTimeline.appendChild(taskElement);
             }
         });
