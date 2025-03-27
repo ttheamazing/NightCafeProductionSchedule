@@ -717,7 +717,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Save product and tasks
     saveProductBtn.addEventListener('click', () => {
+        console.log('Save Product button clicked');
+        
         const productName = productNameInput.value.trim();
+        console.log('Product name:', productName);
+        
         if (!productName) {
             alert('Please enter a product name');
             return;
@@ -726,50 +730,75 @@ document.addEventListener('DOMContentLoaded', () => {
         // Collect tasks
         const tasks = [];
         const taskRows = taskList.querySelectorAll('.task-input-row');
+        console.log('Found task rows:', taskRows.length);
+        
         let hasValidTasks = false;
         
-        taskRows.forEach(row => {
+        taskRows.forEach((row, index) => {
             const taskName = row.querySelector('.task-name-input').value.trim();
             const taskDuration = parseInt(row.querySelector('.task-duration-input').value);
+            console.log(`Task ${index + 1}:`, taskName, taskDuration);
             
             if (taskName && !isNaN(taskDuration) && taskDuration > 0) {
+                const taskId = Date.now() + tasks.length;
                 tasks.push({
-                    id: Date.now() + tasks.length, // Ensure unique IDs
+                    id: taskId,
                     name: taskName,
                     duration: taskDuration
                 });
+                console.log(`Added task with ID ${taskId}`);
                 hasValidTasks = true;
+            } else {
+                console.log(`Skipped invalid task: "${taskName}" with duration ${taskDuration}`);
             }
         });
+        
+        console.log('Valid tasks collected:', tasks.length);
         
         if (!hasValidTasks) {
             alert('Please add at least one valid task with name and duration');
             return;
         }
         
+        console.log('Editing product ID:', editingProductId);
+        console.log('Current products:', ganttChart.data.products);
+        
         if (editingProductId) {
             // Update existing product
             const productIndex = ganttChart.data.products.findIndex(p => p.id === editingProductId);
+            console.log('Found product at index:', productIndex);
+            
             if (productIndex !== -1) {
                 ganttChart.data.products[productIndex].name = productName;
                 ganttChart.data.products[productIndex].tasks = tasks;
+                console.log('Updated existing product:', ganttChart.data.products[productIndex]);
+            } else {
+                console.error('Could not find product with ID:', editingProductId);
             }
         } else {
             // Add new product
+            const newProductId = Date.now();
             const newProduct = {
-                id: Date.now(),
+                id: newProductId,
                 name: productName,
                 tasks: tasks
             };
+            console.log('Adding new product:', newProduct);
+            
             ganttChart.data.products.push(newProduct);
+            console.log('Products after adding:', ganttChart.data.products);
         }
         
         // Close modal and refresh product list
         productModal.style.display = 'none';
+        console.log('Refreshing product list...');
         ganttChart.renderProductList();
         
         // Save data after adding/updating a product
+        console.log('Saving data...');
         ganttChart.saveData();
+        
+        console.log('Product saved successfully');
     });
     
     // Cancel product button

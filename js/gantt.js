@@ -25,7 +25,15 @@ class GanttChart {
     }
     
     renderProductList() {
+        console.log('Rendering product list...');
+        console.log('Products to render:', this.data.products);
+        
         const productList = document.getElementById('product-list');
+        if (!productList) {
+            console.error('Product list element not found!');
+            return;
+        }
+        
         productList.innerHTML = '';
         
         // Add a helper message for drag and drop
@@ -34,7 +42,21 @@ class GanttChart {
         dragHint.textContent = 'Drag products to reorder';
         productList.appendChild(dragHint);
         
-        this.data.products.forEach(product => {
+        if (!this.data.products || this.data.products.length === 0) {
+            console.log('No products to render');
+            const noProductsMsg = document.createElement('div');
+            noProductsMsg.className = 'no-products-message';
+            noProductsMsg.textContent = 'No products added yet. Click "Add New Product" to get started.';
+            noProductsMsg.style.padding = '10px';
+            noProductsMsg.style.color = '#666';
+            noProductsMsg.style.fontStyle = 'italic';
+            productList.appendChild(noProductsMsg);
+            return;
+        }
+        
+        console.log(`Rendering ${this.data.products.length} products`);
+        this.data.products.forEach((product, index) => {
+            console.log(`Rendering product ${index + 1}:`, product);
             const productItem = document.createElement('div');
             productItem.className = 'product-item';
             productItem.setAttribute('data-product-id', product.id);
