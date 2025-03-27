@@ -9,6 +9,9 @@ class GanttChart {
         this.zoomLevel = 1; // Default zoom level
         this.pixelsPerHour = 100; // Default pixels per hour
         
+        // Load saved data from localStorage
+        this.loadSavedData();
+        
         // Initialize the chart
         this.init();
     }
@@ -163,6 +166,9 @@ class GanttChart {
         
         // Update the products array
         this.data.products = reorderedProducts;
+        
+        // Save data after reordering products
+        this.saveData();
     }
     
     deleteProduct(productId) {
@@ -898,6 +904,7 @@ class GanttChart {
         if (index !== -1) {
             this.data.scheduledTasks.splice(index, 1);
             this.renderScheduledTasks();
+            this.saveData(); // Save data after deleting a task
         }
     }
     
@@ -1152,6 +1159,7 @@ class GanttChart {
         const globalEmployee = this.data.employees.find(e => e.id === employeeId);
         if (globalEmployee) {
             globalEmployee.name = newName;
+            this.saveData(); // Save data after updating employee name
             return;
         }
         
@@ -1161,6 +1169,7 @@ class GanttChart {
         const dayEmployee = daySpecificEmployees.find(e => e.id === employeeId);
         if (dayEmployee) {
             dayEmployee.name = newName;
+            this.saveData(); // Save data after updating employee name
         }
     }
     
@@ -1283,6 +1292,55 @@ class GanttChart {
         } else {
             this.renderWeeklyView();
         }
+        
+        // Save data after deleting an employee
+        this.saveData();
+    }
+    
+    // Save data to localStorage
+    saveData() {
+        // Save scheduled tasks
+        localStorage.setItem('gantt_scheduledTasks', JSON.stringify(this.data.scheduledTasks));
+        
+        // Save employees (both global and day-specific)
+        localStorage.setItem('gantt_employees', JSON.stringify(this.data.employees));
+        localStorage.setItem('gantt_daySpecificEmployees', JSON.stringify(this.data.daySpecificEmployees));
+        
+        // Save products
+        localStorage.setItem('gantt_products', JSON.stringify(this.data.products));
+        
+        console.log('Data saved to localStorage');
+    }
+    
+    // Load saved data from localStorage
+    loadSavedData() {
+        // Load scheduled tasks
+        const savedTasks = localStorage.getItem('gantt_scheduledTasks');
+        if (savedTasks) {
+            this.data.scheduledTasks = JSON.parse(savedTasks);
+            console.log('Loaded scheduled tasks from localStorage:', this.data.scheduledTasks.length);
+        }
+        
+        // Load employees
+        const savedEmployees = localStorage.getItem('gantt_employees');
+        if (savedEmployees) {
+            this.data.employees = JSON.parse(savedEmployees);
+            console.log('Loaded employees from localStorage:', this.data.employees.length);
+        }
+        
+        // Load day-specific employees
+        const savedDayEmployees = localStorage.getItem('gantt_daySpecificEmployees');
+        if (savedDayEmployees) {
+            this.data.daySpecificEmployees = JSON.parse(savedDayEmployees);
+            console.log('Loaded day-specific employees from localStorage');
+        }
+        
+        // Load products
+        const savedProducts = localStorage.getItem('gantt_products');
+        if (savedProducts) {
+            this.data.products = JSON.parse(savedProducts);
+            console.log('Loaded products from localStorage:', this.data.products.length);
+        }
     }
     
     // Clear all application data from localStorage
@@ -1319,6 +1377,7 @@ class GanttChart {
         });
         
         console.log(`Cleared all tasks for ${targetDate.toDateString()}`);
+        this.saveData(); // Save data after clearing a day
     }
     
     // Get all tasks visible in the current view

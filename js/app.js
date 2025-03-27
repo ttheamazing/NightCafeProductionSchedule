@@ -340,6 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ganttChart.renderWeeklyView();
         }
         
+        // Save data after applying a template
+        ganttChart.saveData();
+        
         // Close the modal
         templateModal.style.display = 'none';
         
@@ -662,6 +665,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Re-render the product list
         ganttChart.renderProductList();
         
+        // Save data after duplicating a product
+        ganttChart.saveData();
+        
         // Open the modal for the new product to allow editing
         setTimeout(() => {
             openProductModal(newProduct.id);
@@ -734,6 +740,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Close modal and refresh product list
         productModal.style.display = 'none';
         ganttChart.renderProductList();
+        
+        // Save data after adding/updating a product
+        ganttChart.saveData();
     });
     
     // Cancel product button
@@ -803,6 +812,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             ganttChart.renderWeeklyView();
         }
+        
+        // Save data after adding an employee
+        ganttChart.saveData();
     });
     
     // Cancel employee button
