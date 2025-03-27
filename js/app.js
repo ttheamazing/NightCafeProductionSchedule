@@ -601,7 +601,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const addProductBtn = document.createElement('button');
     addProductBtn.textContent = 'Add New Product';
     addProductBtn.className = 'add-product-btn';
-    document.querySelector('.sidebar h2').appendChild(addProductBtn);
+    const sidebarTitle = document.querySelector('.sidebar h2');
+    
+    if (sidebarTitle) {
+        console.log('Found sidebar title, adding product button');
+        sidebarTitle.appendChild(addProductBtn);
+    } else {
+        console.error('Could not find sidebar title element!');
+    }
     
     // Open employee modal when Add Employee button is clicked
     addEmployeeBtn.addEventListener('click', () => {
