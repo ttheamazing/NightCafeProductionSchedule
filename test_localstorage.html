@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Test</title>
+</head>
+<body>
+    <h1>LocalStorage Test</h1>
+    <button id="saveBtn">Save Data</button>
+    <button id="loadBtn">Load Data</button>
+    <button id="clearBtn">Clear Data</button>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            localStorage.setItem('test_data', 'This is a test ' + new Date().toISOString());
+            document.getElementById('output').textContent = 'Data saved!';
+        });
+
+        document.getElementById('loadBtn').addEventListener('click', function() {
+            const data = localStorage.getItem('test_data');
+            document.getElementById('output').textContent = data ? 'Loaded: ' + data : 'No data found';
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            localStorage.removeItem('test_data');
+            document.getElementById('output').textContent = 'Data cleared!';
+        });
+
+        // Check on load
+        const data = localStorage.getItem('test_data');
+        if (data) {
+            document.getElementById('output').textContent = 'Found existing data: ' + data;
+        }
+    </script>
+</body>
+</html>

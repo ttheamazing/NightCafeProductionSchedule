@@ -303,35 +303,6 @@
     <script src="data/sample_data.js?v=2"></script>
     <script src="js/gantt.js?v=2"></script>
     <script src="js/settings.js?v=1"></script>
-    <script src="debug_localstorage.js"></script>
     <script src="js/app.js?v=2"></script>
-    
-    <!-- Debug Button (Hidden in Production) -->
-    <div style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;">
-        <button id="debug-data-btn" style="background-color: #ff0000; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-            Debug Data
-        </button>
-    </div>
-    
-    <script>
-        // Debug button to check data structure
-        document.getElementById('debug-data-btn').addEventListener('click', function() {
-            console.log('=== DEBUG DATA STRUCTURE ===');
-            console.log('ganttChart.data:', ganttChart.data);
-            console.log('Products:', ganttChart.data.products);
-            console.log('Scheduled Tasks:', ganttChart.data.scheduledTasks);
-            console.log('Employees:', ganttChart.data.employees);
-            console.log('Day-specific Employees:', ganttChart.data.daySpecificEmployees);
-            console.log('=== END DEBUG ===');
-            
-            // Check localStorage
-            console.log('=== DEBUG LOCALSTORAGE ===');
-            const savedProducts = localStorage.getItem('gantt_products');
-            console.log('Saved Products:', savedProducts ? JSON.parse(savedProducts) : 'None');
-            console.log('=== END DEBUG ===');
-            
-            alert('Debug data logged to console. Press F12 to view.');
-        });
-    </script>
 </body>
 </html>
