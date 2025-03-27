@@ -1113,6 +1113,9 @@ class GanttChart {
                     };
                     
                     this.data.scheduledTasks.push(newScheduledTask);
+                    
+                    // Save data after adding a new task
+                    this.saveData();
                 }
             }
             
@@ -1122,6 +1125,9 @@ class GanttChart {
             
             // Re-render the scheduled tasks
             this.renderScheduledTasks();
+            
+            // Save data after adding or moving a task
+            this.saveData();
         });
         
         // Reset dragged task on drag end
