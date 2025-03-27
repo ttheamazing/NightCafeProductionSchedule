@@ -1,16 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Check if we have saved data
-    const hasSavedData = localStorage.getItem('gantt_scheduledTasks') || 
-                         localStorage.getItem('gantt_products') || 
-                         localStorage.getItem('gantt_employees');
+    const savedTasks = localStorage.getItem('gantt_scheduledTasks');
+    const savedProducts = localStorage.getItem('gantt_products');
+    const savedEmployees = localStorage.getItem('gantt_employees');
+    
+    console.log('Checking for saved data:');
+    console.log('- Saved tasks:', savedTasks ? `Found (${JSON.parse(savedTasks).length} tasks)` : 'None');
+    console.log('- Saved products:', savedProducts ? `Found (${JSON.parse(savedProducts).length} products)` : 'None');
+    console.log('- Saved employees:', savedEmployees ? `Found (${JSON.parse(savedEmployees).length} employees)` : 'None');
+    
+    const hasSavedData = savedTasks || savedProducts || savedEmployees;
     
     // Initialize the Gantt chart with sample data or empty data if we have saved data
-    const initialData = hasSavedData ? {
-        employees: [],
-        daySpecificEmployees: {},
-        products: [],
-        scheduledTasks: []
-    } : sampleData;
+    let initialData;
+    
+    if (hasSavedData) {
+        console.log('Using empty initial data because saved data was found');
+        initialData = {
+            employees: [],
+            daySpecificEmployees: {},
+            products: [],
+            scheduledTasks: []
+        };
+    } else {
+        console.log('Using sample data because no saved data was found');
+        initialData = sampleData;
+    }
     
     const ganttChart = new GanttChart(initialData);
     

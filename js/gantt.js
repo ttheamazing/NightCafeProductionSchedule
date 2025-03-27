@@ -1305,47 +1305,93 @@ class GanttChart {
     
     // Save data to localStorage
     saveData() {
-        // Save scheduled tasks
-        localStorage.setItem('gantt_scheduledTasks', JSON.stringify(this.data.scheduledTasks));
+        console.log('Saving data to localStorage...');
         
-        // Save employees (both global and day-specific)
-        localStorage.setItem('gantt_employees', JSON.stringify(this.data.employees));
-        localStorage.setItem('gantt_daySpecificEmployees', JSON.stringify(this.data.daySpecificEmployees));
-        
-        // Save products
-        localStorage.setItem('gantt_products', JSON.stringify(this.data.products));
-        
-        console.log('Data saved to localStorage');
+        try {
+            // Save scheduled tasks
+            const tasksJson = JSON.stringify(this.data.scheduledTasks);
+            localStorage.setItem('gantt_scheduledTasks', tasksJson);
+            console.log(`Saved ${this.data.scheduledTasks.length} tasks to localStorage (${tasksJson.length} bytes)`);
+            
+            // Save employees (both global and day-specific)
+            localStorage.setItem('gantt_employees', JSON.stringify(this.data.employees));
+            console.log(`Saved ${this.data.employees.length} employees to localStorage`);
+            
+            // Save day-specific employees
+            const dayEmployeesJson = JSON.stringify(this.data.daySpecificEmployees);
+            localStorage.setItem('gantt_daySpecificEmployees', dayEmployeesJson);
+            console.log(`Saved day-specific employees to localStorage (${dayEmployeesJson.length} bytes)`);
+            
+            // Save products
+            localStorage.setItem('gantt_products', JSON.stringify(this.data.products));
+            console.log(`Saved ${this.data.products.length} products to localStorage`);
+            
+            console.log('All data successfully saved to localStorage');
+            
+            // Verify the data was saved
+            const savedTasks = localStorage.getItem('gantt_scheduledTasks');
+            if (savedTasks) {
+                console.log(`Verified: ${JSON.parse(savedTasks).length} tasks in localStorage`);
+            } else {
+                console.error('Verification failed: Could not read tasks from localStorage after saving');
+            }
+        } catch (e) {
+            console.error('Error saving data to localStorage:', e);
+        }
     }
     
     // Load saved data from localStorage
     loadSavedData() {
-        // Load scheduled tasks
-        const savedTasks = localStorage.getItem('gantt_scheduledTasks');
-        if (savedTasks) {
-            this.data.scheduledTasks = JSON.parse(savedTasks);
-            console.log('Loaded scheduled tasks from localStorage:', this.data.scheduledTasks.length);
-        }
+        console.log('Loading data from localStorage...');
         
-        // Load employees
-        const savedEmployees = localStorage.getItem('gantt_employees');
-        if (savedEmployees) {
-            this.data.employees = JSON.parse(savedEmployees);
-            console.log('Loaded employees from localStorage:', this.data.employees.length);
-        }
-        
-        // Load day-specific employees
-        const savedDayEmployees = localStorage.getItem('gantt_daySpecificEmployees');
-        if (savedDayEmployees) {
-            this.data.daySpecificEmployees = JSON.parse(savedDayEmployees);
-            console.log('Loaded day-specific employees from localStorage');
-        }
-        
-        // Load products
-        const savedProducts = localStorage.getItem('gantt_products');
-        if (savedProducts) {
-            this.data.products = JSON.parse(savedProducts);
-            console.log('Loaded products from localStorage:', this.data.products.length);
+        try {
+            // Load scheduled tasks
+            const savedTasks = localStorage.getItem('gantt_scheduledTasks');
+            if (savedTasks) {
+                const parsedTasks = JSON.parse(savedTasks);
+                this.data.scheduledTasks = parsedTasks;
+                console.log(`Loaded ${parsedTasks.length} scheduled tasks from localStorage (${savedTasks.length} bytes)`);
+                
+                // Log a sample task for debugging
+                if (parsedTasks.length > 0) {
+                    console.log('Sample task:', parsedTasks[0]);
+                }
+            } else {
+                console.log('No scheduled tasks found in localStorage');
+            }
+            
+            // Load employees
+            const savedEmployees = localStorage.getItem('gantt_employees');
+            if (savedEmployees) {
+                const parsedEmployees = JSON.parse(savedEmployees);
+                this.data.employees = parsedEmployees;
+                console.log(`Loaded ${parsedEmployees.length} employees from localStorage`);
+            } else {
+                console.log('No employees found in localStorage');
+            }
+            
+            // Load day-specific employees
+            const savedDayEmployees = localStorage.getItem('gantt_daySpecificEmployees');
+            if (savedDayEmployees) {
+                this.data.daySpecificEmployees = JSON.parse(savedDayEmployees);
+                console.log('Loaded day-specific employees from localStorage');
+            } else {
+                console.log('No day-specific employees found in localStorage');
+            }
+            
+            // Load products
+            const savedProducts = localStorage.getItem('gantt_products');
+            if (savedProducts) {
+                const parsedProducts = JSON.parse(savedProducts);
+                this.data.products = parsedProducts;
+                console.log(`Loaded ${parsedProducts.length} products from localStorage`);
+            } else {
+                console.log('No products found in localStorage');
+            }
+            
+            console.log('Finished loading data from localStorage');
+        } catch (e) {
+            console.error('Error loading data from localStorage:', e);
         }
     }
     
