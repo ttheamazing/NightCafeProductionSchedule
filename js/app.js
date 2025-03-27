@@ -85,9 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Clear localStorage
                 localStorage.clear();
                 
-                // Also clear any sample data tasks
-                if (sampleData && sampleData.scheduledTasks) {
-                    sampleData.scheduledTasks = [];
+                // Also clear any tasks in the current data
+                if (ganttChart && ganttChart.data && ganttChart.data.scheduledTasks) {
+                    ganttChart.data.scheduledTasks = [];
                 }
                 
                 // Reload the page
@@ -669,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
     duplicateProductBtn.addEventListener('click', () => {
         if (!editingProductId) return;
         
-        const originalProduct = sampleData.products.find(p => p.id === editingProductId);
+        const originalProduct = ganttChart.data.products.find(p => p.id === editingProductId);
         if (!originalProduct) return;
         
         // Create a new product with the same tasks
@@ -684,7 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         
         // Add the new product to the data
-        sampleData.products.push(newProduct);
+        ganttChart.data.products.push(newProduct);
         
         // Close the current modal
         productModal.style.display = 'none';
@@ -749,10 +749,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (editingProductId) {
             // Update existing product
-            const productIndex = sampleData.products.findIndex(p => p.id === editingProductId);
+            const productIndex = ganttChart.data.products.findIndex(p => p.id === editingProductId);
             if (productIndex !== -1) {
-                sampleData.products[productIndex].name = productName;
-                sampleData.products[productIndex].tasks = tasks;
+                ganttChart.data.products[productIndex].name = productName;
+                ganttChart.data.products[productIndex].tasks = tasks;
             }
         } else {
             // Add new product
@@ -761,7 +761,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: productName,
                 tasks: tasks
             };
-            sampleData.products.push(newProduct);
+            ganttChart.data.products.push(newProduct);
         }
         
         // Close modal and refresh product list
@@ -803,8 +803,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Generate a unique ID
         const allEmployeeIds = [
-            ...sampleData.employees.map(e => e.id),
-            ...Object.values(sampleData.daySpecificEmployees).flat().map(e => e.id)
+            ...ganttChart.data.employees.map(e => e.id),
+            ...Object.values(ganttChart.data.daySpecificEmployees).flat().map(e => e.id)
         ];
         const newId = allEmployeeIds.length > 0 ? Math.max(...allEmployeeIds) + 1 : 1;
         
@@ -817,16 +817,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (isGlobal) {
             // Add to global employees
-            sampleData.employees.push(newEmployee);
+            ganttChart.data.employees.push(newEmployee);
         } else {
             // Add to day-specific employees
             const currentDateStr = ganttChart.getCurrentDateString();
             
-            if (!sampleData.daySpecificEmployees[currentDateStr]) {
-                sampleData.daySpecificEmployees[currentDateStr] = [];
+            if (!ganttChart.data.daySpecificEmployees[currentDateStr]) {
+                ganttChart.data.daySpecificEmployees[currentDateStr] = [];
             }
             
-            sampleData.daySpecificEmployees[currentDateStr].push(newEmployee);
+            ganttChart.data.daySpecificEmployees[currentDateStr].push(newEmployee);
         }
         
         // Close modal and refresh
@@ -879,7 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalTitle.textContent = 'Edit Product';
             duplicateProductBtn.style.display = 'block'; // Show duplicate button
             
-            const product = sampleData.products.find(p => p.id === productId);
+            const product = ganttChart.data.products.find(p => p.id === productId);
             if (product) {
                 productNameInput.value = product.name;
                 
