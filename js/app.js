@@ -1,6 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize the Gantt chart with sample data
-    const ganttChart = new GanttChart(sampleData);
+    // Check if we have saved data
+    const hasSavedData = localStorage.getItem('gantt_scheduledTasks') || 
+                         localStorage.getItem('gantt_products') || 
+                         localStorage.getItem('gantt_employees');
+    
+    // Initialize the Gantt chart with sample data or empty data if we have saved data
+    const initialData = hasSavedData ? {
+        employees: [],
+        daySpecificEmployees: {},
+        products: [],
+        scheduledTasks: []
+    } : sampleData;
+    
+    const ganttChart = new GanttChart(initialData);
     
     // Set current date to today
     const today = new Date();
