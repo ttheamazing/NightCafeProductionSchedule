@@ -592,6 +592,23 @@ document.addEventListener('DOMContentLoaded', () => {
         openProductModal();
     });
     
+    // Add a duplicate product button to the product modal
+    const duplicateProductBtn = document.createElement('button');
+    duplicateProductBtn.id = 'duplicate-product-btn';
+    duplicateProductBtn.textContent = 'Duplicate Product';
+    duplicateProductBtn.className = 'duplicate-product-btn';
+    duplicateProductBtn.style.backgroundColor = '#17a2b8';
+    duplicateProductBtn.style.color = 'white';
+    duplicateProductBtn.style.border = 'none';
+    duplicateProductBtn.style.padding = '8px 16px';
+    duplicateProductBtn.style.borderRadius = '4px';
+    duplicateProductBtn.style.marginRight = 'auto'; // Push it to the left
+    duplicateProductBtn.style.display = 'none'; // Initially hidden
+    
+    // Add the duplicate button to the modal actions
+    const modalActions = document.querySelector('#product-modal .modal-actions');
+    modalActions.insertBefore(duplicateProductBtn, modalActions.firstChild);
+    
     // Open product modal when product name is clicked (to edit)
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('product-name')) {
@@ -616,6 +633,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add a new task input row
     addTaskBtn.addEventListener('click', () => {
         addTaskInputRow();
+    });
+    
+    // Duplicate product functionality
+    duplicateProductBtn.addEventListener('click', () => {
+        if (!editingProductId) return;
+        
+        const originalProduct = sampleData.products.find(p => p.id === editingProductId);
+        if (!originalProduct) return;
+        
+        // Create a new product with the same tasks
+        const newProduct = {
+            id: Date.now(),
+            name: `${originalProduct.name} (Copy)`,
+            tasks: originalProduct.tasks.map(task => ({
+                id: Date.now() + Math.floor(Math.random() * 1000), // Generate unique ID
+                name: task.name,
+                duration: task.duration
+            }))
+        };
+        
+        // Add the new product to the data
+        sampleData.products.push(newProduct);
+        
+        // Close the current modal
+        productModal.style.display = 'none';
+        
+        // Re-render the product list
+        ganttChart.renderProductList();
+        
+        // Open the modal for the new product to allow editing
+        setTimeout(() => {
+            openProductModal(newProduct.id);
+        }, 100);
     });
     
     // Remove task input row
@@ -782,8 +832,14 @@ document.addEventListener('DOMContentLoaded', () => {
         productNameInput.value = '';
         taskList.innerHTML = '';
         
+        // Update modal title and show/hide duplicate button
+        const modalTitle = document.querySelector('#product-modal h2');
+        
         if (productId) {
             // Edit existing product
+            modalTitle.textContent = 'Edit Product';
+            duplicateProductBtn.style.display = 'block'; // Show duplicate button
+            
             const product = sampleData.products.find(p => p.id === productId);
             if (product) {
                 productNameInput.value = product.name;
@@ -795,6 +851,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             // New product, add one empty task row
+            modalTitle.textContent = 'Add New Product';
+            duplicateProductBtn.style.display = 'none'; // Hide duplicate button
             addTaskInputRow();
         }
         

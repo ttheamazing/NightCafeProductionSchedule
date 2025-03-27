@@ -25,10 +25,17 @@ class GanttChart {
         const productList = document.getElementById('product-list');
         productList.innerHTML = '';
         
+        // Add a helper message for drag and drop
+        const dragHint = document.createElement('div');
+        dragHint.className = 'drag-hint';
+        dragHint.textContent = 'Drag products to reorder';
+        productList.appendChild(dragHint);
+        
         this.data.products.forEach(product => {
             const productItem = document.createElement('div');
             productItem.className = 'product-item';
             productItem.setAttribute('data-product-id', product.id);
+            productItem.setAttribute('draggable', 'true');
             
             const productHeader = document.createElement('div');
             productHeader.className = 'product-header';
@@ -68,6 +75,16 @@ class GanttChart {
             productItem.appendChild(productTasks);
             productList.appendChild(productItem);
             
+            // Add drag and drop event listeners
+            productItem.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', product.id);
+                productItem.classList.add('dragging');
+            });
+            
+            productItem.addEventListener('dragend', () => {
+                productItem.classList.remove('dragging');
+            });
+            
             // Add event listener for expand/collapse
             expandIcon.addEventListener('click', () => {
                 if (productTasks.style.display === 'none') {
@@ -87,6 +104,65 @@ class GanttChart {
                 }
             });
         });
+        
+        // Add drop zone functionality to the product list
+        productList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const draggingItem = document.querySelector('.product-item.dragging');
+            if (!draggingItem) return;
+            
+            const afterElement = this.getDragAfterElement(productList, e.clientY);
+            if (afterElement) {
+                productList.insertBefore(draggingItem, afterElement);
+            } else {
+                productList.appendChild(draggingItem);
+            }
+        });
+        
+        productList.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const draggedProductId = parseInt(e.dataTransfer.getData('text/plain'));
+            
+            // Update the data array to match the new order
+            const newOrder = Array.from(productList.querySelectorAll('.product-item'))
+                .filter(item => item.getAttribute('data-product-id'))
+                .map(item => parseInt(item.getAttribute('data-product-id')));
+            
+            // Reorder the products array
+            this.reorderProducts(newOrder);
+        });
+    }
+    
+    // Helper method to determine where to place the dragged element
+    getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.product-item:not(.dragging)')];
+        
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+    
+    // Reorder products based on new order of IDs
+    reorderProducts(newOrder) {
+        // Create a new array with the products in the new order
+        const reorderedProducts = [];
+        
+        newOrder.forEach(id => {
+            const product = this.data.products.find(p => p.id === id);
+            if (product) {
+                reorderedProducts.push(product);
+            }
+        });
+        
+        // Update the products array
+        this.data.products = reorderedProducts;
     }
     
     deleteProduct(productId) {
